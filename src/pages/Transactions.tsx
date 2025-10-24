@@ -1,69 +1,18 @@
 import { useState } from 'react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import MobileNav from '@/components/layout/MobileNav';
-import { Search, Download, Settings, ChevronLeft, ChevronRight } from 'lucide-react';
-import { mockTransactions, transactionColumns, type Transaction } from '@/config/transactions';
-
-function TransactionTable({ transactions }: { transactions: Transaction[] }) {
-  return (
-    <div className="overflow-x-auto rounded-lg border bg-card">
-      <Table>
-        <TableHeader>
-          <TableRow>
-            {transactionColumns.map((column) => (
-              <TableHead key={column.key} className="whitespace-nowrap">
-                {column.label}
-              </TableHead>
-            ))}
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          {transactions.map((transaction, index) => (
-            <TableRow key={index}>
-              <TableCell className="font-medium text-primary">
-                {transaction.reference}
-              </TableCell>
-              <TableCell className="whitespace-nowrap">{transaction.operation}</TableCell>
-              <TableCell>{transaction.instrument}</TableCell>
-              <TableCell className="text-right">{transaction.quantity}</TableCell>
-              <TableCell className="text-right">
-                {transaction.faceAmount?.toFixed(2) || '-'}
-              </TableCell>
-              <TableCell className="text-right">
-                {transaction.price?.toFixed(2) || '-'}
-              </TableCell>
-              <TableCell className="whitespace-nowrap">{transaction.valueDate}</TableCell>
-              <TableCell className="whitespace-nowrap">{transaction.settlementDate}</TableCell>
-              <TableCell className="text-right">
-                {transaction.amount?.toFixed(2) || '-'}
-              </TableCell>
-              <TableCell className="text-right">
-                {transaction.actualAmount?.toFixed(2) || '-'}
-              </TableCell>
-              <TableCell className="text-right">
-                {transaction.accruedInterest?.toFixed(2) || '-'}
-              </TableCell>
-              <TableCell className="text-right">
-                {transaction.feeAmount?.toFixed(2) || '-'}
-              </TableCell>
-              <TableCell className="text-right">
-                {transaction.taxAmount?.toFixed(2) || '-'}
-              </TableCell>
-            </TableRow>
-          ))}
-        </TableBody>
-      </Table>
-    </div>
-  );
-}
+import TransactionCard from '@/components/transactions/TransactionCard';
+import TransactionTable from '@/components/transactions/TransactionTable';
+import FiltersSheet from '@/components/transactions/FiltersSheet';
+import { Search, Download, ChevronLeft, ChevronRight } from 'lucide-react';
+import { mockTransactions } from '@/config/transactions';
 
 export default function Transactions() {
   const [searchQuery, setSearchQuery] = useState('');
-  const [dateFrom] = useState('22.10.2025');
-  const [dateTo] = useState('28.10.2025');
+  const [dateFrom, setDateFrom] = useState('22.10.2025');
+  const [dateTo, setDateTo] = useState('28.10.2025');
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const [currentPage, setCurrentPage] = useState(1);
 
@@ -79,86 +28,114 @@ export default function Transactions() {
   const paginatedTransactions = filteredTransactions.slice(startIndex, endIndex);
 
   return (
-    <div className="min-h-screen bg-background pb-20">
-      <header className="bg-card border-b px-4 py-4">
+    <div className="min-h-screen bg-background pb-20 md:pb-6">
+      {/* Mobile Header */}
+      <header className="sticky top-0 z-10 bg-card border-b px-4 py-3">
         <div className="max-w-7xl mx-auto">
-          <div className="flex items-center justify-between mb-4">
-            <h1 className="text-2xl font-bold">Transactions</h1>
+          <div className="flex items-center justify-between mb-3">
+            <h1 className="text-xl font-bold">Transactions</h1>
             <div className="flex gap-2">
-              <Button variant="ghost" size="icon">
-                <Download className="h-5 w-5" />
+              <Button variant="ghost" size="icon" className="h-9 w-9">
+                <Download className="h-4 w-4" />
               </Button>
-              <Button variant="ghost" size="icon">
-                <Settings className="h-5 w-5" />
-              </Button>
-            </div>
-          </div>
-
-          <div className="flex flex-col md:flex-row gap-4">
-            <div className="relative flex-1">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-              <Input
-                placeholder="Search"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="pl-9"
+              <FiltersSheet
+                dateFrom={dateFrom}
+                dateTo={dateTo}
+                onDateFromChange={setDateFrom}
+                onDateToChange={setDateTo}
               />
             </div>
           </div>
 
-          <div className="mt-4 text-sm text-muted-foreground">
-            Create date From {dateFrom} to {dateTo}
+          {/* Search Bar */}
+          <div className="relative">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+            <Input
+              placeholder="Search transactions..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="pl-9 h-10"
+            />
+          </div>
+
+          {/* Date Range - Mobile */}
+          <div className="mt-3 text-xs text-muted-foreground">
+            {dateFrom} to {dateTo}
           </div>
         </div>
       </header>
 
-      <main className="max-w-7xl mx-auto px-4 py-6">
-        <TransactionTable transactions={paginatedTransactions} />
+      <main className="max-w-7xl mx-auto px-4 py-4">
+        {/* Mobile Card View */}
+        <div className="lg:hidden space-y-3">
+          {paginatedTransactions.length === 0 ? (
+            <div className="text-center py-12">
+              <p className="text-muted-foreground">No transactions found</p>
+            </div>
+          ) : (
+            paginatedTransactions.map((transaction, index) => (
+              <TransactionCard key={index} transaction={transaction} />
+            ))
+          )}
+        </div>
 
-        <div className="mt-4 flex flex-col sm:flex-row items-center justify-between gap-4">
-          <div className="flex items-center gap-2">
-            <span className="text-sm text-muted-foreground">Rows per page</span>
-            <Select
-              value={rowsPerPage.toString()}
-              onValueChange={(value) => setRowsPerPage(Number(value))}
-            >
-              <SelectTrigger className="w-20">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="5">5</SelectItem>
-                <SelectItem value="10">10</SelectItem>
-                <SelectItem value="25">25</SelectItem>
-                <SelectItem value="50">50</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
+        {/* Desktop Table View */}
+        <div className="hidden lg:block">
+          <TransactionTable transactions={paginatedTransactions} />
+        </div>
 
-          <div className="flex items-center gap-4">
-            <span className="text-sm text-muted-foreground">
-              {startIndex + 1}-{Math.min(endIndex, filteredTransactions.length)} of{' '}
-              {filteredTransactions.length}
-            </span>
-            <div className="flex gap-1">
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
-                disabled={currentPage === 1}
+        {/* Pagination */}
+        {filteredTransactions.length > 0 && (
+          <div className="mt-6 flex flex-col sm:flex-row items-center justify-between gap-4 pb-4">
+            <div className="flex items-center gap-2">
+              <span className="text-sm text-muted-foreground whitespace-nowrap">Rows per page</span>
+              <Select
+                value={rowsPerPage.toString()}
+                onValueChange={(value) => {
+                  setRowsPerPage(Number(value));
+                  setCurrentPage(1);
+                }}
               >
-                <ChevronLeft className="h-4 w-4" />
-              </Button>
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
-                disabled={currentPage === totalPages}
-              >
-                <ChevronRight className="h-4 w-4" />
-              </Button>
+                <SelectTrigger className="w-20 h-9">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="5">5</SelectItem>
+                  <SelectItem value="10">10</SelectItem>
+                  <SelectItem value="25">25</SelectItem>
+                  <SelectItem value="50">50</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div className="flex items-center gap-4">
+              <span className="text-sm text-muted-foreground">
+                {startIndex + 1}-{Math.min(endIndex, filteredTransactions.length)} of{' '}
+                {filteredTransactions.length}
+              </span>
+              <div className="flex gap-1">
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="h-9 w-9"
+                  onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
+                  disabled={currentPage === 1}
+                >
+                  <ChevronLeft className="h-4 w-4" />
+                </Button>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="h-9 w-9"
+                  onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
+                  disabled={currentPage === totalPages}
+                >
+                  <ChevronRight className="h-4 w-4" />
+                </Button>
+              </div>
             </div>
           </div>
-        </div>
+        )}
       </main>
 
       <MobileNav />
