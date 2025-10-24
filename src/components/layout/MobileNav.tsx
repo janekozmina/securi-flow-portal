@@ -1,5 +1,5 @@
 import { Link, useLocation } from 'react-router-dom';
-import { Home, TrendingUp, History, Gavel, MoreHorizontal } from 'lucide-react';
+import { Home, TrendingUp, History, Gavel, MoreHorizontal, Shield, ArrowRightLeft } from 'lucide-react';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
 import { UserCircle, FileCheck, UserPlus } from 'lucide-react';
 
@@ -14,8 +14,8 @@ const moreNavItems = [
   { label: 'Investor Profile', icon: UserCircle, path: '/account' },
   { label: 'KYC Update', icon: FileCheck, path: '/kyc' },
   { label: 'Account Opening', icon: UserPlus, path: '/account-opening' },
-  { label: 'Pledging', icon: FileCheck, path: '/pledging' },
-  { label: 'Security Transfer', icon: FileCheck, path: '/security-transfer' },
+  { label: 'Securities Pledging', icon: Shield, path: '/pledging' },
+  { label: 'Securities Transfer', icon: ArrowRightLeft, path: '/security-transfer' },
 ];
 
 export default function MobileNav() {

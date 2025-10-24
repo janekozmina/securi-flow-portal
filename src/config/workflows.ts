@@ -57,7 +57,7 @@ export const workflowScenarios: WorkflowScenario[] = [
     title: 'Securities Pledging',
     description: 'Pledge or unpledge your securities',
     icon: 'Lock',
-    route: '/pledge',
+    route: '/pledging',
     category: 'securities',
     actors: ['Investor/Broker', 'Lender', 'CSD'],
     steps: [
@@ -73,7 +73,7 @@ export const workflowScenarios: WorkflowScenario[] = [
     title: 'Securities Transfer',
     description: 'Transfer securities between CSD accounts',
     icon: 'ArrowRightLeft',
-    route: '/transfer',
+    route: '/security-transfer',
     category: 'securities',
     actors: ['Sender', 'Receiver', 'Broker/CSD'],
     steps: [
