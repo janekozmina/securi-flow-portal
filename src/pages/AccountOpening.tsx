@@ -81,8 +81,8 @@ export default function AccountOpening() {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="nida">NIDA Number</Label>
-              <Input id="nida" placeholder="XXXX-XXXXXXXX-XXXXX-XX" />
+              <Label htmlFor="gov-id">GOV ID Number</Label>
+              <Input id="gov-id" placeholder="XXXX-XXXXXXXX-XXXXX-XX" />
               <p className="text-xs text-muted-foreground">
                 Used for automatic identity verification
               </p>

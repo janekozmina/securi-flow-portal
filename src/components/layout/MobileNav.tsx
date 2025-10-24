@@ -11,9 +11,11 @@ const mainNavItems = [
 ];
 
 const moreNavItems = [
-  { label: 'Account', icon: UserCircle, path: '/account' },
+  { label: 'Investor Profile', icon: UserCircle, path: '/account' },
   { label: 'KYC Update', icon: FileCheck, path: '/kyc' },
   { label: 'Account Opening', icon: UserPlus, path: '/account-opening' },
+  { label: 'Pledging', icon: FileCheck, path: '/pledging' },
+  { label: 'Security Transfer', icon: FileCheck, path: '/security-transfer' },
 ];
 
 export default function MobileNav() {

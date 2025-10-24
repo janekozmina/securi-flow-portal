@@ -46,7 +46,7 @@ export const workflowScenarios: WorkflowScenario[] = [
     actors: ['Applicant', 'Broker', 'CSD Officer'],
     steps: [
       { id: '1', label: 'Registration', status: 'pending', actor: 'Applicant' },
-      { id: '2', label: 'Identity Verification', status: 'pending', actor: 'System/NIDA' },
+      { id: '2', label: 'Identity Verification', status: 'pending', actor: 'System/GOV' },
       { id: '3', label: 'Document Upload', status: 'pending', actor: 'Applicant' },
       { id: '4', label: 'Broker Validation', status: 'pending', actor: 'Broker' },
       { id: '5', label: 'Account Creation', status: 'pending', actor: 'CSD Officer' },
