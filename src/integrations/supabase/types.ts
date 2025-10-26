@@ -14,6 +14,54 @@ export type Database = {
   }
   public: {
     Tables: {
+      auctions: {
+        Row: {
+          close_date: string
+          code: string
+          created_at: string
+          flex: string
+          id: string
+          instrument: string
+          instrument_code: string
+          recommended_price: number | null
+          reference: string
+          start_date: string
+          status: string
+          status_name: string
+          updated_at: string
+        }
+        Insert: {
+          close_date: string
+          code: string
+          created_at?: string
+          flex?: string
+          id?: string
+          instrument: string
+          instrument_code?: string
+          recommended_price?: number | null
+          reference: string
+          start_date: string
+          status?: string
+          status_name?: string
+          updated_at?: string
+        }
+        Update: {
+          close_date?: string
+          code?: string
+          created_at?: string
+          flex?: string
+          id?: string
+          instrument?: string
+          instrument_code?: string
+          recommended_price?: number | null
+          reference?: string
+          start_date?: string
+          status?: string
+          status_name?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       kyc_documents: {
         Row: {
           document_type: string
@@ -121,7 +169,7 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      generate_live_auction_data: { Args: never; Returns: undefined }
     }
     Enums: {
       [_ in never]: never
