@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -11,8 +11,10 @@ import TextMessagesDialog from '@/components/auctions/TextMessagesDialog';
 import AuctionCard from '@/components/auctions/AuctionCard';
 import AuctionTable from '@/components/auctions/AuctionTable';
 import { Gavel, Search, Download, ChevronLeft, ChevronRight, Calendar } from 'lucide-react';
-import { mockAuctions, AuctionItem } from '@/config/auctions';
+import { AuctionItem } from '@/config/auctions';
 import { toast } from 'sonner';
+import { supabase } from '@/integrations/supabase/client';
+import { format } from 'date-fns';
 
 export default function Auctions() {
   const [searchQuery, setSearchQuery] = useState('');
@@ -23,8 +25,68 @@ export default function Auctions() {
   const [textMessagesOpen, setTextMessagesOpen] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [rowsPerPage, setRowsPerPage] = useState(10);
+  const [auctions, setAuctions] = useState<AuctionItem[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  const filteredAuctions = mockAuctions.filter((auction) => {
+  // Fetch auctions from database
+  useEffect(() => {
+    fetchAuctions();
+
+    // Subscribe to realtime updates
+    const channel = supabase
+      .channel('auctions-changes')
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'auctions'
+        },
+        () => {
+          fetchAuctions();
+          toast.success('Auction data updated');
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, []);
+
+  const fetchAuctions = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('auctions')
+        .select('*')
+        .order('created_at', { ascending: false });
+
+      if (error) throw error;
+
+      // Transform database data to match AuctionItem interface
+      const transformedAuctions: AuctionItem[] = (data || []).map((auction) => ({
+        reference: auction.reference,
+        instrument: auction.instrument,
+        code: auction.code,
+        flex: auction.flex as 'Yes' | 'No',
+        instrumentCode: auction.instrument_code,
+        status: auction.status,
+        statusName: auction.status_name,
+        recommendedPrice: auction.recommended_price ? Number(auction.recommended_price) : undefined,
+        startDate: format(new Date(auction.start_date), 'dd.MM.yyyy'),
+        closeDate: format(new Date(auction.close_date), 'dd.MM.yyyy'),
+      }));
+
+      setAuctions(transformedAuctions);
+    } catch (error: any) {
+      console.error('Error fetching auctions:', error);
+      toast.error('Failed to load auctions');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const filteredAuctions = auctions.filter((auction) => {
     const matchesSearch =
       auction.instrument.toLowerCase().includes(searchQuery.toLowerCase()) ||
       auction.code.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -59,7 +121,9 @@ export default function Auctions() {
           <div className="flex items-center justify-between gap-4">
             <div className="flex items-center gap-3">
               <Gavel className="h-6 w-6" />
-              <h1 className="text-xl lg:text-2xl font-bold">Auctions</h1>
+              <h1 className="text-xl lg:text-2xl font-bold">
+                Auctions {!loading && <span className="text-sm font-normal">({auctions.length})</span>}
+              </h1>
             </div>
             <Button variant="secondary" size="sm">
               <Download className="h-4 w-4 lg:mr-2" />
@@ -120,7 +184,13 @@ export default function Auctions() {
 
         {/* Mobile View - Cards */}
         <div className="lg:hidden space-y-3">
-          {paginatedAuctions.map((auction) => (
+          {loading ? (
+            <Card>
+              <CardContent className="py-8 text-center text-muted-foreground">
+                Loading auctions...
+              </CardContent>
+            </Card>
+          ) : paginatedAuctions.map((auction) => (
             <AuctionCard
               key={auction.reference}
               auction={auction}
@@ -133,7 +203,13 @@ export default function Auctions() {
 
         {/* Desktop View - Table */}
         <div className="hidden lg:block">
-          {paginatedAuctions.length > 0 ? (
+          {loading ? (
+            <Card>
+              <CardContent className="py-8 text-center text-muted-foreground">
+                Loading auctions...
+              </CardContent>
+            </Card>
+          ) : paginatedAuctions.length > 0 ? (
             <AuctionTable
               auctions={paginatedAuctions}
               onPlaceBid={handlePlaceBid}
