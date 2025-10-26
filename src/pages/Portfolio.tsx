@@ -3,6 +3,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Badge } from '@/components/ui/badge';
 import MobileNav from '@/components/layout/MobileNav';
 import { TrendingUp, Lock } from 'lucide-react';
+import { formatCurrency } from '@/config/currency';
 
 const holdings = [
   { isin: 'TZ000001', name: 'CRDB Bank PLC', quantity: 5000, free: 4000, pledged: 1000, value: 750000 },
@@ -92,7 +93,7 @@ export default function Portfolio() {
                   <div className="flex items-center justify-between text-sm">
                     <div>
                       <p className="text-lg font-bold">
-                        TSh {(holding.value / 1000).toFixed(0)}K
+                        {formatCurrency(holding.value / 1000)}K
                       </p>
                     </div>
                     <div className="flex gap-4 text-xs">
@@ -129,7 +130,7 @@ export default function Portfolio() {
                 </CardHeader>
                 <CardContent>
                   <p className="text-lg font-bold">
-                    TSh {((holding.value * holding.free / holding.quantity) / 1000).toFixed(0)}K
+                    {formatCurrency((holding.value * holding.free / holding.quantity) / 1000)}K
                   </p>
                 </CardContent>
               </Card>
@@ -152,7 +153,7 @@ export default function Portfolio() {
                 </CardHeader>
                 <CardContent>
                   <p className="text-lg font-bold">
-                    TSh {((holding.value * holding.pledged / holding.quantity) / 1000).toFixed(0)}K
+                    {formatCurrency((holding.value * holding.pledged / holding.quantity) / 1000)}K
                   </p>
                 </CardContent>
               </Card>

@@ -180,7 +180,7 @@ export default function SecurityTransfer() {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="face-value">Total Face Value (TSh)</Label>
+                <Label htmlFor="face-value">Total Face Value (USD)</Label>
                 <Input
                   id="face-value"
                   type="number"

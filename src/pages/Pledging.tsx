@@ -95,7 +95,7 @@ export default function Pledging() {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="pledge-amount">Pledge Amount (TSh)</Label>
+                <Label htmlFor="pledge-amount">Pledge Amount (USD)</Label>
                 <Input
                   id="pledge-amount"
                   type="number"
@@ -164,7 +164,7 @@ export default function Pledging() {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="face-value">Face Value (TSh)</Label>
+                <Label htmlFor="face-value">Face Value (USD)</Label>
                 <Input
                   id="face-value"
                   type="number"

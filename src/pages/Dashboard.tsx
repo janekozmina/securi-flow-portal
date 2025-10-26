@@ -6,6 +6,8 @@ import { toast } from 'sonner';
 import MobileNav from '@/components/layout/MobileNav';
 import WorkflowCard from '@/components/shared/WorkflowCard';
 import { workflowScenarios } from '@/config/workflows';
+import { ThemeToggle } from '@/components/shared/ThemeToggle';
+import { formatCurrency } from '@/config/currency';
 
 export default function Dashboard() {
   const navigate = useNavigate();
@@ -24,9 +26,12 @@ export default function Dashboard() {
         <div className="max-w-2xl mx-auto">
           <div className="flex items-center justify-between mb-1">
             <h1 className="text-2xl font-bold">Investor Portal</h1>
-            <Button variant="ghost" size="icon" onClick={handleLogout} className="text-primary-foreground hover:bg-primary-foreground/10">
-              <LogOut className="h-5 w-5" />
-            </Button>
+            <div className="flex items-center gap-2">
+              <ThemeToggle />
+              <Button variant="ghost" size="icon" onClick={handleLogout} className="text-primary-foreground hover:bg-primary-foreground/10">
+                <LogOut className="h-5 w-5" />
+              </Button>
+            </div>
           </div>
           <p className="text-sm opacity-90">Welcome back, John Investor</p>
         </div>
@@ -37,7 +42,7 @@ export default function Dashboard() {
           <CardHeader className="pb-3">
             <CardDescription className="text-xs">Total Portfolio Value</CardDescription>
             <CardTitle className="text-3xl font-bold">
-              ${portfolioValue.toLocaleString('en-US', { minimumFractionDigits: 2 })}
+              {formatCurrency(portfolioValue)}
             </CardTitle>
           </CardHeader>
           <CardContent>
@@ -48,7 +53,7 @@ export default function Dashboard() {
                 <ArrowDownRight className="h-4 w-4 text-destructive" />
               )}
               <span className={dayChange >= 0 ? 'text-success' : 'text-destructive'}>
-                ${Math.abs(dayChange).toLocaleString('en-US', { minimumFractionDigits: 2 })} ({dayChangePercent}%)
+                {formatCurrency(Math.abs(dayChange))} ({dayChangePercent}%)
               </span>
               <span className="text-muted-foreground">today</span>
             </div>
