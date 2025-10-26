@@ -4,7 +4,7 @@ import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/co
 import { UserCircle, FileCheck, UserPlus } from 'lucide-react';
 
 const mainNavItems = [
-  { label: 'Home', icon: Home, path: '/' },
+  { label: 'Home', icon: Home, path: '/dashboard' },
   { label: 'Portfolio', icon: TrendingUp, path: '/portfolio' },
   { label: 'Transactions', icon: History, path: '/transactions' },
   { label: 'Auctions', icon: Gavel, path: '/auctions' },

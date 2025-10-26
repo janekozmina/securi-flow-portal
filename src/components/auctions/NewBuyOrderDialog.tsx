@@ -35,7 +35,7 @@ export default function NewBuyOrderDialog({
     orderType: 'Competitive',
     executionType: 'Full Execution',
     units: 55,
-    currency: 'BWP',
+    currency: 'USD',
     lots: 55,
     approxSettlementAmount: 4950,
   });

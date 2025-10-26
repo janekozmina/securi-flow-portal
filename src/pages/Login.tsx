@@ -26,7 +26,7 @@ export default function Login() {
 
     // Mock authentication
     toast.success('Login successful!');
-    navigate('/');
+    navigate('/dashboard');
   };
 
   const handleSignup = (e: React.FormEvent) => {

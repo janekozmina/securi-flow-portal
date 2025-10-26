@@ -91,7 +91,5 @@ export const positionAccounts = [
 
 // Currencies
 export const currencies = [
-  { value: 'BWP', label: 'BWP' },
   { value: 'USD', label: 'USD' },
-  { value: 'EUR', label: 'EUR' },
 ];

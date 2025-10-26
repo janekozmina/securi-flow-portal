@@ -1,20 +1,33 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { ArrowUpRight, ArrowDownRight, TrendingUp, Activity } from 'lucide-react';
+import { ArrowUpRight, ArrowDownRight, TrendingUp, Activity, LogOut } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import { toast } from 'sonner';
 import MobileNav from '@/components/layout/MobileNav';
 import WorkflowCard from '@/components/shared/WorkflowCard';
 import { workflowScenarios } from '@/config/workflows';
 
 export default function Dashboard() {
+  const navigate = useNavigate();
   const portfolioValue = 2456789.50;
   const dayChange = 12456.30;
   const dayChangePercent = 0.51;
+
+  const handleLogout = () => {
+    toast.success('Logged out successfully');
+    navigate('/');
+  };
 
   return (
     <div className="min-h-screen bg-background pb-20">
       <header className="bg-primary text-primary-foreground px-4 pt-6 pb-8">
         <div className="max-w-2xl mx-auto">
-          <h1 className="text-2xl font-bold mb-1">Investor Portal</h1>
+          <div className="flex items-center justify-between mb-1">
+            <h1 className="text-2xl font-bold">Investor Portal</h1>
+            <Button variant="ghost" size="icon" onClick={handleLogout} className="text-primary-foreground hover:bg-primary-foreground/10">
+              <LogOut className="h-5 w-5" />
+            </Button>
+          </div>
           <p className="text-sm opacity-90">Welcome back, John Investor</p>
         </div>
       </header>
@@ -24,7 +37,7 @@ export default function Dashboard() {
           <CardHeader className="pb-3">
             <CardDescription className="text-xs">Total Portfolio Value</CardDescription>
             <CardTitle className="text-3xl font-bold">
-              TSh {portfolioValue.toLocaleString('en-US', { minimumFractionDigits: 2 })}
+              ${portfolioValue.toLocaleString('en-US', { minimumFractionDigits: 2 })}
             </CardTitle>
           </CardHeader>
           <CardContent>
@@ -35,7 +48,7 @@ export default function Dashboard() {
                 <ArrowDownRight className="h-4 w-4 text-destructive" />
               )}
               <span className={dayChange >= 0 ? 'text-success' : 'text-destructive'}>
-                TSh {Math.abs(dayChange).toLocaleString('en-US', { minimumFractionDigits: 2 })} ({dayChangePercent}%)
+                ${Math.abs(dayChange).toLocaleString('en-US', { minimumFractionDigits: 2 })} ({dayChangePercent}%)
               </span>
               <span className="text-muted-foreground">today</span>
             </div>

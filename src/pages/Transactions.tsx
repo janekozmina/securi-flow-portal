@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Badge } from '@/components/ui/badge';
 import MobileNav from '@/components/layout/MobileNav';
 import TransactionCard from '@/components/transactions/TransactionCard';
 import TransactionTable from '@/components/transactions/TransactionTable';
@@ -13,14 +14,17 @@ export default function Transactions() {
   const [searchQuery, setSearchQuery] = useState('');
   const [dateFrom, setDateFrom] = useState('22.10.2025');
   const [dateTo, setDateTo] = useState('28.10.2025');
+  const [statusFilter, setStatusFilter] = useState<'all' | 'completed'>('all');
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const [currentPage, setCurrentPage] = useState(1);
 
-  const filteredTransactions = mockTransactions.filter((transaction) =>
-    Object.values(transaction).some((value) =>
+  const filteredTransactions = mockTransactions.filter((transaction) => {
+    const matchesSearch = Object.values(transaction).some((value) =>
       value?.toString().toLowerCase().includes(searchQuery.toLowerCase())
-    )
-  );
+    );
+    // Add status filter logic if needed
+    return matchesSearch;
+  });
 
   const totalPages = Math.ceil(filteredTransactions.length / rowsPerPage);
   const startIndex = (currentPage - 1) * rowsPerPage;
@@ -29,21 +33,49 @@ export default function Transactions() {
 
   return (
     <div className="min-h-screen bg-background pb-20 md:pb-6">
-      {/* Mobile Header */}
+      {/* Header */}
       <header className="sticky top-0 z-10 bg-card border-b px-4 py-3">
         <div className="max-w-7xl mx-auto">
           <div className="flex items-center justify-between mb-3">
             <h1 className="text-xl font-bold">Transactions</h1>
-            <div className="flex gap-2">
-              <Button variant="ghost" size="icon" className="h-9 w-9">
-                <Download className="h-4 w-4" />
-              </Button>
+            <Button variant="ghost" size="icon" className="h-9 w-9">
+              <Download className="h-4 w-4" />
+            </Button>
+          </div>
+
+          {/* Filters Row */}
+          <div className="flex items-center gap-2 mb-3">
+            <div className="flex gap-2 lg:hidden">
               <FiltersSheet
                 dateFrom={dateFrom}
                 dateTo={dateTo}
                 onDateFromChange={setDateFrom}
                 onDateToChange={setDateTo}
               />
+            </div>
+            
+            {/* Desktop Date Display */}
+            <div className="hidden lg:flex items-center gap-2 text-sm text-muted-foreground">
+              <span>{dateFrom}</span>
+              <span>-</span>
+              <span>{dateTo}</span>
+            </div>
+
+            <div className="flex gap-2 ml-auto lg:ml-0">
+              <Badge
+                variant={statusFilter === 'all' ? 'default' : 'outline'}
+                className="cursor-pointer"
+                onClick={() => setStatusFilter('all')}
+              >
+                All
+              </Badge>
+              <Badge
+                variant={statusFilter === 'completed' ? 'default' : 'outline'}
+                className="cursor-pointer"
+                onClick={() => setStatusFilter('completed')}
+              >
+                Completed
+              </Badge>
             </div>
           </div>
 
@@ -56,11 +88,6 @@ export default function Transactions() {
               onChange={(e) => setSearchQuery(e.target.value)}
               className="pl-9 h-10"
             />
-          </div>
-
-          {/* Date Range - Mobile */}
-          <div className="mt-3 text-xs text-muted-foreground">
-            {dateFrom} to {dateTo}
           </div>
         </div>
       </header>
