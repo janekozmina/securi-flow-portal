@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -7,6 +7,7 @@ import { Label } from '@/components/ui/label';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { LogIn } from 'lucide-react';
 import { toast } from 'sonner';
+import { supabase } from '@/integrations/supabase/client';
 
 export default function Login() {
   const navigate = useNavigate();
@@ -15,8 +16,31 @@ export default function Login() {
   const [signupEmail, setSignupEmail] = useState('');
   const [signupPassword, setSignupPassword] = useState('');
   const [signupConfirmPassword, setSignupConfirmPassword] = useState('');
+  const [loading, setLoading] = useState(false);
 
-  const handleLogin = (e: React.FormEvent) => {
+  useEffect(() => {
+    // Check if user is already logged in
+    const checkUser = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (user) {
+        // Check onboarding status
+        const { data: status } = await supabase
+          .from('onboarding_status')
+          .select('is_completed')
+          .eq('user_id', user.id)
+          .single();
+
+        if (status?.is_completed) {
+          navigate('/dashboard');
+        } else {
+          navigate('/account-opening');
+        }
+      }
+    };
+    checkUser();
+  }, [navigate]);
+
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     
     if (!loginEmail || !loginPassword) {
@@ -24,12 +48,40 @@ export default function Login() {
       return;
     }
 
-    // Mock authentication
-    toast.success('Login successful!');
-    navigate('/dashboard');
+    setLoading(true);
+    try {
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email: loginEmail,
+        password: loginPassword,
+      });
+
+      if (error) throw error;
+
+      if (data.user) {
+        // Check onboarding status
+        const { data: status } = await supabase
+          .from('onboarding_status')
+          .select('is_completed')
+          .eq('user_id', data.user.id)
+          .single();
+
+        if (status?.is_completed) {
+          toast.success('Login successful!');
+          navigate('/dashboard');
+        } else {
+          toast.success('Please complete your account setup');
+          navigate('/account-opening');
+        }
+      }
+    } catch (error: any) {
+      console.error('Login error:', error);
+      toast.error(error.message || 'Failed to login');
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const handleSignup = (e: React.FormEvent) => {
+  const handleSignup = async (e: React.FormEvent) => {
     e.preventDefault();
     
     if (!signupEmail || !signupPassword || !signupConfirmPassword) {
@@ -47,9 +99,28 @@ export default function Login() {
       return;
     }
 
-    // Mock signup and redirect to onboarding
-    toast.success('Account created! Complete your profile to get started.');
-    navigate('/account-opening');
+    setLoading(true);
+    try {
+      const { data, error } = await supabase.auth.signUp({
+        email: signupEmail,
+        password: signupPassword,
+        options: {
+          emailRedirectTo: `${window.location.origin}/account-opening`,
+        },
+      });
+
+      if (error) throw error;
+
+      if (data.user) {
+        toast.success('Account created! Complete your profile to get started.');
+        navigate('/account-opening');
+      }
+    } catch (error: any) {
+      console.error('Signup error:', error);
+      toast.error(error.message || 'Failed to create account');
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -99,8 +170,8 @@ export default function Login() {
                     />
                   </div>
 
-                  <Button type="submit" className="w-full" size="lg">
-                    Login
+                  <Button type="submit" className="w-full" size="lg" disabled={loading}>
+                    {loading ? 'Logging in...' : 'Login'}
                   </Button>
 
                   <Button type="button" variant="link" className="w-full text-sm">
@@ -144,8 +215,8 @@ export default function Login() {
                     />
                   </div>
 
-                  <Button type="submit" className="w-full" size="lg">
-                    Create Account
+                  <Button type="submit" className="w-full" size="lg" disabled={loading}>
+                    {loading ? 'Creating account...' : 'Create Account'}
                   </Button>
 
                   <p className="text-xs text-muted-foreground text-center">
