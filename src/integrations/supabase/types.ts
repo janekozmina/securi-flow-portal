@@ -265,35 +265,122 @@ export type Database = {
       profiles: {
         Row: {
           address: string | null
+          beneficiary_account: string | null
+          beneficiary_name: string | null
+          bic_of_investors_bank: string | null
+          branch_code: string | null
+          branch_name: string | null
+          citizenship: string | null
+          city: string | null
+          country_of_residence: string | null
           created_at: string | null
           date_of_birth: string | null
+          dividend_payment_option: string | null
+          email: string | null
+          employer: string | null
+          first_name: string | null
           full_name: string | null
           gender: string | null
           gov_id_number: string | null
           id: string
+          id_document_type: string | null
+          institution_type: string | null
+          investor_code: string | null
+          is_foreign: boolean | null
+          is_legal: boolean | null
+          is_underage: boolean | null
+          kin_address: string | null
+          kin_email: string | null
+          kin_full_name: string | null
+          kin_phone: string | null
+          kin_relationship: string | null
+          last_name: string | null
+          middle_name: string | null
+          name_of_investors_bank: string | null
+          occupation: string | null
           phone: string | null
+          postal_address: string | null
+          tax_number: string | null
           updated_at: string | null
         }
         Insert: {
           address?: string | null
+          beneficiary_account?: string | null
+          beneficiary_name?: string | null
+          bic_of_investors_bank?: string | null
+          branch_code?: string | null
+          branch_name?: string | null
+          citizenship?: string | null
+          city?: string | null
+          country_of_residence?: string | null
           created_at?: string | null
           date_of_birth?: string | null
+          dividend_payment_option?: string | null
+          email?: string | null
+          employer?: string | null
+          first_name?: string | null
           full_name?: string | null
           gender?: string | null
           gov_id_number?: string | null
           id: string
+          id_document_type?: string | null
+          institution_type?: string | null
+          investor_code?: string | null
+          is_foreign?: boolean | null
+          is_legal?: boolean | null
+          is_underage?: boolean | null
+          kin_address?: string | null
+          kin_email?: string | null
+          kin_full_name?: string | null
+          kin_phone?: string | null
+          kin_relationship?: string | null
+          last_name?: string | null
+          middle_name?: string | null
+          name_of_investors_bank?: string | null
+          occupation?: string | null
           phone?: string | null
+          postal_address?: string | null
+          tax_number?: string | null
           updated_at?: string | null
         }
         Update: {
           address?: string | null
+          beneficiary_account?: string | null
+          beneficiary_name?: string | null
+          bic_of_investors_bank?: string | null
+          branch_code?: string | null
+          branch_name?: string | null
+          citizenship?: string | null
+          city?: string | null
+          country_of_residence?: string | null
           created_at?: string | null
           date_of_birth?: string | null
+          dividend_payment_option?: string | null
+          email?: string | null
+          employer?: string | null
+          first_name?: string | null
           full_name?: string | null
           gender?: string | null
           gov_id_number?: string | null
           id?: string
+          id_document_type?: string | null
+          institution_type?: string | null
+          investor_code?: string | null
+          is_foreign?: boolean | null
+          is_legal?: boolean | null
+          is_underage?: boolean | null
+          kin_address?: string | null
+          kin_email?: string | null
+          kin_full_name?: string | null
+          kin_phone?: string | null
+          kin_relationship?: string | null
+          last_name?: string | null
+          middle_name?: string | null
+          name_of_investors_bank?: string | null
+          occupation?: string | null
           phone?: string | null
+          postal_address?: string | null
+          tax_number?: string | null
           updated_at?: string | null
         }
         Relationships: []

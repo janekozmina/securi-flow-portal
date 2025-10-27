@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -6,7 +6,9 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Checkbox } from '@/components/ui/checkbox';
 import MobileNav from '@/components/layout/MobileNav';
-import { Calendar } from 'lucide-react';
+import { Calendar, Upload, FileText, Download } from 'lucide-react';
+import { supabase } from '@/integrations/supabase/client';
+import { toast } from 'sonner';
 import {
   mockInvestorProfile,
   profileSections,
@@ -17,6 +19,8 @@ import {
   idDocumentTypes,
   banks,
   dividendPaymentOptions,
+  relationshipTypes,
+  occupations,
   type InvestorProfile,
 } from '@/config/investorProfile';
 
@@ -25,6 +29,104 @@ export default function Account() {
   const [profile, setProfile] = useState<InvestorProfile>(mockInvestorProfile);
   const [isLegal, setIsLegal] = useState(false);
   const [isForeign, setIsForeign] = useState(false);
+  const [documents, setDocuments] = useState<any[]>([]);
+  const [uploading, setUploading] = useState(false);
+
+  useEffect(() => {
+    loadDocuments();
+  }, []);
+
+  const loadDocuments = async () => {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return;
+
+    const { data, error } = await supabase
+      .from('kyc_documents')
+      .select('*')
+      .eq('user_id', user.id)
+      .order('uploaded_at', { ascending: false });
+
+    if (error) {
+      console.error('Error loading documents:', error);
+      return;
+    }
+
+    setDocuments(data || []);
+  };
+
+  const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>, documentType: string) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    // Validate file size (max 10MB)
+    if (file.size > 10 * 1024 * 1024) {
+      toast.error('File size must be less than 10MB');
+      return;
+    }
+
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) {
+      toast.error('You must be logged in to upload documents');
+      return;
+    }
+
+    setUploading(true);
+
+    try {
+      // Upload to storage
+      const fileExt = file.name.split('.').pop();
+      const fileName = `${user.id}/${documentType}_${Date.now()}.${fileExt}`;
+      
+      const { error: uploadError } = await supabase.storage
+        .from('kyc-documents')
+        .upload(fileName, file);
+
+      if (uploadError) throw uploadError;
+
+      // Save to database
+      const { error: dbError } = await supabase
+        .from('kyc_documents')
+        .insert({
+          user_id: user.id,
+          document_type: documentType,
+          file_name: file.name,
+          file_path: fileName,
+          file_size: file.size,
+        });
+
+      if (dbError) throw dbError;
+
+      toast.success('Document uploaded successfully');
+      await loadDocuments();
+    } catch (error: any) {
+      console.error('Upload error:', error);
+      toast.error('Failed to upload document');
+    } finally {
+      setUploading(false);
+    }
+  };
+
+  const downloadDocument = async (filePath: string, fileName: string) => {
+    try {
+      const { data, error } = await supabase.storage
+        .from('kyc-documents')
+        .download(filePath);
+
+      if (error) throw error;
+
+      const url = URL.createObjectURL(data);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = fileName;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    } catch (error: any) {
+      console.error('Download error:', error);
+      toast.error('Failed to download document');
+    }
+  };
 
   return (
     <div className="min-h-screen bg-background pb-20">
@@ -274,28 +376,283 @@ export default function Account() {
                   </div>
                 )}
 
-                {/* Placeholder sections */}
+                {/* KIN Section */}
                 {activeSection === 'kin' && (
-                  <div className="text-center py-8 text-muted-foreground">
-                    KIN section - Coming soon
+                  <div className="space-y-4">
+                    <div>
+                      <Label className="text-destructive">Full Name *</Label>
+                      <Input value={profile.kinFullName} className="mt-1.5" />
+                    </div>
+
+                    <div>
+                      <Label className="text-destructive">Relationship *</Label>
+                      <Select value={profile.kinRelationship}>
+                        <SelectTrigger className="mt-1.5">
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {relationshipTypes.map((type) => (
+                            <SelectItem key={type} value={type}>
+                              {type}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+
+                    <div>
+                      <Label className="text-destructive">Phone Number *</Label>
+                      <Input value={profile.kinPhone} className="mt-1.5" />
+                    </div>
+
+                    <div>
+                      <Label>Email Address</Label>
+                      <Input value={profile.kinEmail} type="email" className="mt-1.5" />
+                    </div>
+
+                    <div>
+                      <Label className="text-destructive">Address *</Label>
+                      <Input value={profile.kinAddress} className="mt-1.5" />
+                    </div>
                   </div>
                 )}
 
+                {/* DETAILS Section */}
                 {activeSection === 'details' && (
-                  <div className="text-center py-8 text-muted-foreground">
-                    Details section - Coming soon
+                  <div className="space-y-4">
+                    <div>
+                      <Label>Postal Address</Label>
+                      <Input value={profile.postalAddress} className="mt-1.5" />
+                    </div>
+
+                    <div>
+                      <Label className="text-destructive">Email Address *</Label>
+                      <Input value={profile.email} type="email" className="mt-1.5" />
+                    </div>
+
+                    <div>
+                      <Label className="text-destructive">Occupation *</Label>
+                      <Select value={profile.occupation}>
+                        <SelectTrigger className="mt-1.5">
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {occupations.map((occupation) => (
+                            <SelectItem key={occupation} value={occupation}>
+                              {occupation}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+
+                    <div>
+                      <Label>Employer</Label>
+                      <Input value={profile.employer} className="mt-1.5" />
+                    </div>
+
+                    <div>
+                      <Label>Tax Number</Label>
+                      <Input value={profile.taxNumber} className="mt-1.5" />
+                    </div>
                   </div>
                 )}
 
+                {/* COPY OF DOCUMENT Section */}
                 {activeSection === 'document' && (
-                  <div className="text-center py-8 text-muted-foreground">
-                    Copy of document - Coming soon
+                  <div className="space-y-6">
+                    <div className="space-y-4">
+                      <div>
+                        <Label>ID Document (Front)</Label>
+                        <div className="mt-1.5 flex gap-2">
+                          <Input
+                            type="file"
+                            accept="image/*,.pdf"
+                            onChange={(e) => handleFileUpload(e, 'id_front')}
+                            disabled={uploading}
+                            className="flex-1"
+                          />
+                          <Button
+                            variant="outline"
+                            size="icon"
+                            disabled={uploading}
+                          >
+                            <Upload className="h-4 w-4" />
+                          </Button>
+                        </div>
+                      </div>
+
+                      <div>
+                        <Label>ID Document (Back)</Label>
+                        <div className="mt-1.5 flex gap-2">
+                          <Input
+                            type="file"
+                            accept="image/*,.pdf"
+                            onChange={(e) => handleFileUpload(e, 'id_back')}
+                            disabled={uploading}
+                            className="flex-1"
+                          />
+                          <Button
+                            variant="outline"
+                            size="icon"
+                            disabled={uploading}
+                          >
+                            <Upload className="h-4 w-4" />
+                          </Button>
+                        </div>
+                      </div>
+                    </div>
+
+                    {documents.filter(d => d.document_type.startsWith('id_')).length > 0 && (
+                      <div className="space-y-2">
+                        <Label>Uploaded Documents</Label>
+                        <div className="space-y-2">
+                          {documents
+                            .filter(d => d.document_type.startsWith('id_'))
+                            .map((doc) => (
+                              <div
+                                key={doc.id}
+                                className="flex items-center justify-between p-3 border rounded-lg"
+                              >
+                                <div className="flex items-center gap-2">
+                                  <FileText className="h-4 w-4 text-muted-foreground" />
+                                  <div>
+                                    <p className="text-sm font-medium">{doc.file_name}</p>
+                                    <p className="text-xs text-muted-foreground">
+                                      {new Date(doc.uploaded_at).toLocaleDateString()}
+                                    </p>
+                                  </div>
+                                </div>
+                                <Button
+                                  variant="ghost"
+                                  size="sm"
+                                  onClick={() => downloadDocument(doc.file_path, doc.file_name)}
+                                >
+                                  <Download className="h-4 w-4" />
+                                </Button>
+                              </div>
+                            ))}
+                        </div>
+                      </div>
+                    )}
                   </div>
                 )}
 
+                {/* COPIES OF KYC DOCUMENTS Section */}
                 {activeSection === 'kyc' && (
-                  <div className="text-center py-8 text-muted-foreground">
-                    Copies of KYC documents - Coming soon
+                  <div className="space-y-6">
+                    <div className="space-y-4">
+                      <div>
+                        <Label>Proof of Residence</Label>
+                        <div className="mt-1.5 flex gap-2">
+                          <Input
+                            type="file"
+                            accept="image/*,.pdf"
+                            onChange={(e) => handleFileUpload(e, 'proof_of_residence')}
+                            disabled={uploading}
+                            className="flex-1"
+                          />
+                          <Button
+                            variant="outline"
+                            size="icon"
+                            disabled={uploading}
+                          >
+                            <Upload className="h-4 w-4" />
+                          </Button>
+                        </div>
+                      </div>
+
+                      <div>
+                        <Label>Bank Statement</Label>
+                        <div className="mt-1.5 flex gap-2">
+                          <Input
+                            type="file"
+                            accept="image/*,.pdf"
+                            onChange={(e) => handleFileUpload(e, 'bank_statement')}
+                            disabled={uploading}
+                            className="flex-1"
+                          />
+                          <Button
+                            variant="outline"
+                            size="icon"
+                            disabled={uploading}
+                          >
+                            <Upload className="h-4 w-4" />
+                          </Button>
+                        </div>
+                      </div>
+
+                      <div>
+                        <Label>Passport Photo</Label>
+                        <div className="mt-1.5 flex gap-2">
+                          <Input
+                            type="file"
+                            accept="image/*"
+                            onChange={(e) => handleFileUpload(e, 'passport_photo')}
+                            disabled={uploading}
+                            className="flex-1"
+                          />
+                          <Button
+                            variant="outline"
+                            size="icon"
+                            disabled={uploading}
+                          >
+                            <Upload className="h-4 w-4" />
+                          </Button>
+                        </div>
+                      </div>
+
+                      <div>
+                        <Label>Other Documents</Label>
+                        <div className="mt-1.5 flex gap-2">
+                          <Input
+                            type="file"
+                            accept="image/*,.pdf"
+                            onChange={(e) => handleFileUpload(e, 'other')}
+                            disabled={uploading}
+                            className="flex-1"
+                          />
+                          <Button
+                            variant="outline"
+                            size="icon"
+                            disabled={uploading}
+                          >
+                            <Upload className="h-4 w-4" />
+                          </Button>
+                        </div>
+                      </div>
+                    </div>
+
+                    {documents.length > 0 && (
+                      <div className="space-y-2">
+                        <Label>Uploaded KYC Documents</Label>
+                        <div className="space-y-2">
+                          {documents.map((doc) => (
+                            <div
+                              key={doc.id}
+                              className="flex items-center justify-between p-3 border rounded-lg"
+                            >
+                              <div className="flex items-center gap-2">
+                                <FileText className="h-4 w-4 text-muted-foreground" />
+                                <div>
+                                  <p className="text-sm font-medium">{doc.file_name}</p>
+                                  <p className="text-xs text-muted-foreground">
+                                    {doc.document_type.replace(/_/g, ' ').toUpperCase()} • {new Date(doc.uploaded_at).toLocaleDateString()}
+                                  </p>
+                                </div>
+                              </div>
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                onClick={() => downloadDocument(doc.file_path, doc.file_name)}
+                              >
+                                <Download className="h-4 w-4" />
+                              </Button>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
                   </div>
                 )}
               </div>

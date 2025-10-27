@@ -16,6 +16,20 @@ export interface InvestorProfile {
   idDocumentType: string;
   idDocumentSeriesAndNumber: string;
   
+  // KIN Details
+  kinFullName: string;
+  kinRelationship: string;
+  kinPhone: string;
+  kinEmail: string;
+  kinAddress: string;
+  
+  // Additional Details
+  postalAddress: string;
+  email: string;
+  occupation: string;
+  employer: string;
+  taxNumber: string;
+  
   // Bank Details
   bicOfInvestorsBank: string;
   nameOfInvestorsBank: string;
@@ -74,6 +88,24 @@ export const dividendPaymentOptions = [
   'Cheque',
 ];
 
+export const relationshipTypes = [
+  'Spouse',
+  'Parent',
+  'Child',
+  'Sibling',
+  'Other Family',
+  'Friend',
+];
+
+export const occupations = [
+  'Employed',
+  'Self-Employed',
+  'Business Owner',
+  'Retired',
+  'Student',
+  'Unemployed',
+];
+
 export const mockInvestorProfile: InvestorProfile = {
   investorCode: '1004312',
   institutionType: 'Individual',
@@ -88,6 +120,16 @@ export const mockInvestorProfile: InvestorProfile = {
   dateOfBirth: '01.01.1990',
   idDocumentType: 'Age Estimate Certificate',
   idDocumentSeriesAndNumber: '122234',
+  kinFullName: 'John Doe',
+  kinRelationship: 'Spouse',
+  kinPhone: '+267 7234 5678',
+  kinEmail: 'john.doe@example.com',
+  kinAddress: 'Plot 456, Gaborone, Botswana',
+  postalAddress: 'P.O. Box 123, Gaborone',
+  email: 'artesia.ger@example.com',
+  occupation: 'Business Owner',
+  employer: 'Self Employed',
+  taxNumber: 'TAX123456789',
   bicOfInvestorsBank: 'BARCBWGX - ABSA BANK LIMITED',
   nameOfInvestorsBank: 'ABSA BANK CAPITAL LIMITED',
   branchCode: '',
