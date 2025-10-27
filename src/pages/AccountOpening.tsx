@@ -7,6 +7,7 @@ import { toast } from 'sonner';
 import StepIndicator from '@/components/onboarding/StepIndicator';
 import Step1AccountType from '@/components/onboarding/Step1AccountType';
 import Step2PersonalInfo from '@/components/onboarding/Step2PersonalInfo';
+import Step2_5SMSOtp from '@/components/onboarding/Step2_5SMSOtp';
 import Step3Documents from '@/components/onboarding/Step3Documents';
 import Step4Review from '@/components/onboarding/Step4Review';
 
@@ -100,7 +101,7 @@ export default function AccountOpening() {
       </header>
 
       <main className="max-w-2xl mx-auto px-4 py-6">
-        <StepIndicator currentStep={currentStep} totalSteps={4} />
+        <StepIndicator currentStep={currentStep} totalSteps={5} />
 
         {currentStep === 1 && (
           <Step1AccountType
@@ -120,10 +121,18 @@ export default function AccountOpening() {
         )}
 
         {currentStep === 3 && (
-          <Step3Documents onNext={handleNext} onBack={handleBack} />
+          <Step2_5SMSOtp
+            phoneNumber={personalInfo.phone}
+            onNext={handleNext}
+            onBack={handleBack}
+          />
         )}
 
         {currentStep === 4 && (
+          <Step3Documents onNext={handleNext} onBack={handleBack} />
+        )}
+
+        {currentStep === 5 && (
           <Step4Review
             onSubmit={handleSubmit}
             onBack={handleBack}

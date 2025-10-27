@@ -62,6 +62,47 @@ export type Database = {
         }
         Relationships: []
       }
+      bids: {
+        Row: {
+          auction_id: string
+          bid_price: number
+          created_at: string
+          id: string
+          quantity: number
+          status: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          auction_id: string
+          bid_price: number
+          created_at?: string
+          id?: string
+          quantity: number
+          status?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          auction_id?: string
+          bid_price?: number
+          created_at?: string
+          id?: string
+          quantity?: number
+          status?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "bids_auction_id_fkey"
+            columns: ["auction_id"]
+            isOneToOne: false
+            referencedRelation: "auctions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       kyc_documents: {
         Row: {
           document_type: string
@@ -163,6 +204,53 @@ export type Database = {
           updated_at?: string | null
         }
         Relationships: []
+      }
+      trades: {
+        Row: {
+          auction_id: string
+          created_at: string
+          id: string
+          quantity: number
+          settlement_date: string | null
+          status: string
+          trade_date: string
+          trade_price: number
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          auction_id: string
+          created_at?: string
+          id?: string
+          quantity: number
+          settlement_date?: string | null
+          status?: string
+          trade_date?: string
+          trade_price: number
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          auction_id?: string
+          created_at?: string
+          id?: string
+          quantity?: number
+          settlement_date?: string | null
+          status?: string
+          trade_date?: string
+          trade_price?: number
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "trades_auction_id_fkey"
+            columns: ["auction_id"]
+            isOneToOne: false
+            referencedRelation: "auctions"
+            referencedColumns: ["id"]
+          },
+        ]
       }
     }
     Views: {

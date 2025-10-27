@@ -1,5 +1,5 @@
 import { Link, useLocation } from 'react-router-dom';
-import { Home, TrendingUp, History, Gavel, MoreHorizontal, Shield, ArrowRightLeft } from 'lucide-react';
+import { Home, TrendingUp, History, Gavel, MoreHorizontal, Shield, ArrowRightLeft, HandCoins, TrendingDown } from 'lucide-react';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
 import { UserCircle, FileCheck, UserPlus } from 'lucide-react';
 
@@ -11,6 +11,8 @@ const mainNavItems = [
 ];
 
 const moreNavItems = [
+  { label: 'My Bids', icon: HandCoins, path: '/bids' },
+  { label: 'My Trades', icon: TrendingDown, path: '/trades' },
   { label: 'Investor Profile', icon: UserCircle, path: '/account' },
   { label: 'KYC Update', icon: FileCheck, path: '/kyc' },
   { label: 'Account Opening', icon: UserPlus, path: '/account-opening' },

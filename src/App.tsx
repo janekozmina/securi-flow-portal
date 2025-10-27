@@ -9,6 +9,8 @@ import Dashboard from "./pages/Dashboard";
 import Portfolio from "./pages/Portfolio";
 import Transactions from "./pages/Transactions";
 import Auctions from "./pages/Auctions";
+import Bids from "./pages/Bids";
+import Trades from "./pages/Trades";
 import Account from "./pages/Account";
 import KYCUpdate from "./pages/KYCUpdate";
 import AccountOpening from "./pages/AccountOpening";
@@ -32,6 +34,8 @@ const App = () => (
           <Route path="/portfolio" element={<Portfolio />} />
           <Route path="/transactions" element={<Transactions />} />
           <Route path="/auctions" element={<Auctions />} />
+          <Route path="/bids" element={<Bids />} />
+          <Route path="/trades" element={<Trades />} />
           <Route path="/account" element={<Account />} />
           <Route path="/kyc" element={<KYCUpdate />} />
           <Route path="/account-opening" element={<AccountOpening />} />
