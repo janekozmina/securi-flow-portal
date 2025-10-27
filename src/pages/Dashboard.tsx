@@ -8,6 +8,7 @@ import WorkflowCard from '@/components/shared/WorkflowCard';
 import { workflowScenarios } from '@/config/workflows';
 import { ThemeToggle } from '@/components/shared/ThemeToggle';
 import { formatCurrency } from '@/config/currency';
+import { supabase } from '@/integrations/supabase/client';
 
 export default function Dashboard() {
   const navigate = useNavigate();
@@ -15,9 +16,14 @@ export default function Dashboard() {
   const dayChange = 12456.30;
   const dayChangePercent = 0.51;
 
-  const handleLogout = () => {
-    toast.success('Logged out successfully');
-    navigate('/');
+  const handleLogout = async () => {
+    try {
+      await supabase.auth.signOut();
+      toast.success('Logged out successfully');
+      navigate('/login');
+    } catch (error) {
+      toast.error('Failed to logout');
+    }
   };
 
   return (

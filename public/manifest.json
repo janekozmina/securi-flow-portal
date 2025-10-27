@@ -1,0 +1,17 @@
+{
+  "name": "Investor Portal",
+  "short_name": "Investor Portal",
+  "description": "CSD Account Management Portal",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#1a365d",
+  "icons": [
+    {
+      "src": "/favicon.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}

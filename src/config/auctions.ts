@@ -19,6 +19,7 @@ export interface BuyOrderData {
   currency: string;
   lots: number;
   approxSettlementAmount: number;
+  price: number;
 }
 
 export interface SecurityBorrowingData {

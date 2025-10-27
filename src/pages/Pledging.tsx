@@ -7,12 +7,36 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import MobileNav from '@/components/layout/MobileNav';
 import WorkflowProgress from '@/components/shared/WorkflowProgress';
 import { ArrowLeft, Shield } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { getWorkflowById } from '@/config/workflows';
+import { submitPledgeRequest, PledgeFormData } from './PledgingSubmit';
 
 export default function Pledging() {
   const workflow = getWorkflowById('securities-pledge');
+  const navigate = useNavigate();
   const [activeSection, setActiveSection] = useState('details');
+  const [submitting, setSubmitting] = useState(false);
+  const [formData, setFormData] = useState<PledgeFormData>({
+    pledgeType: '',
+    pledgeDate: '',
+    pledgeReason: '',
+    referenceNumber: `PLG${Date.now()}`,
+    sourceAccount: '',
+    instrument: '',
+    quantity: 0,
+    lenderName: '',
+    lenderAccount: '',
+    lenderContact: '',
+  });
+
+  const handleSubmit = async () => {
+    setSubmitting(true);
+    const success = await submitPledgeRequest(formData);
+    setSubmitting(false);
+    if (success) {
+      navigate('/dashboard');
+    }
+  };
 
   if (!workflow) return null;
 
@@ -82,7 +106,7 @@ export default function Pledging() {
             <CardContent className="space-y-4">
               <div className="space-y-2">
                 <Label htmlFor="pledge-type">Pledge Type</Label>
-                <Select>
+                <Select value={formData.pledgeType} onValueChange={(v) => setFormData({...formData, pledgeType: v})}>
                   <SelectTrigger id="pledge-type">
                     <SelectValue placeholder="Select pledge type" />
                   </SelectTrigger>
@@ -250,8 +274,8 @@ export default function Pledging() {
           </Card>
         )}
 
-        <Button className="w-full" size="lg">
-          Submit Pledge Request
+        <Button className="w-full" size="lg" onClick={handleSubmit} disabled={submitting}>
+          {submitting ? 'Submitting...' : 'Submit Pledge Request'}
         </Button>
 
         <p className="text-xs text-muted-foreground text-center mt-4">

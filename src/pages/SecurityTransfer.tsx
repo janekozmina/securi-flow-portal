@@ -8,12 +8,39 @@ import { Textarea } from '@/components/ui/textarea';
 import MobileNav from '@/components/layout/MobileNav';
 import WorkflowProgress from '@/components/shared/WorkflowProgress';
 import { ArrowLeft, ArrowRightLeft } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { getWorkflowById } from '@/config/workflows';
+import { submitTransferRequest, TransferFormData } from './SecurityTransferSubmit';
 
 export default function SecurityTransfer() {
   const workflow = getWorkflowById('securities-transfer');
+  const navigate = useNavigate();
   const [activeSection, setActiveSection] = useState('transfer-details');
+  const [submitting, setSubmitting] = useState(false);
+  const [formData, setFormData] = useState<TransferFormData>({
+    transferType: '',
+    transferDate: '',
+    transferReason: '',
+    referenceNumber: `TRF${Date.now()}`,
+    sourceAccount: '',
+    instrument: '',
+    quantity: 0,
+    recipientType: '',
+    recipientName: '',
+    recipientAccount: '',
+    recipientId: '',
+    recipientEmail: '',
+    recipientPhone: '',
+  });
+
+  const handleSubmit = async () => {
+    setSubmitting(true);
+    const success = await submitTransferRequest(formData);
+    setSubmitting(false);
+    if (success) {
+      navigate('/dashboard');
+    }
+  };
 
   if (!workflow) return null;
 
@@ -83,7 +110,7 @@ export default function SecurityTransfer() {
             <CardContent className="space-y-4">
               <div className="space-y-2">
                 <Label htmlFor="transfer-type">Transfer Type</Label>
-                <Select>
+                <Select value={formData.transferType} onValueChange={(v) => setFormData({...formData, transferType: v})}>
                   <SelectTrigger id="transfer-type">
                     <SelectValue placeholder="Select transfer type" />
                   </SelectTrigger>
@@ -265,8 +292,8 @@ export default function SecurityTransfer() {
           </Card>
         )}
 
-        <Button className="w-full" size="lg">
-          Submit Transfer Request
+        <Button className="w-full" size="lg" onClick={handleSubmit} disabled={submitting}>
+          {submitting ? 'Submitting...' : 'Submit Transfer Request'}
         </Button>
 
         <p className="text-xs text-muted-foreground text-center mt-4">

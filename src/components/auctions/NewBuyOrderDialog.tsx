@@ -34,15 +34,15 @@ export default function NewBuyOrderDialog({
     positionAccount: '1004312ICSX00',
     orderType: 'Competitive',
     executionType: 'Full Execution',
-    units: 55,
+    units: 0,
     currency: 'USD',
-    lots: 55,
-    approxSettlementAmount: 4950,
+    lots: 0,
+    approxSettlementAmount: 0,
+    price: 0,
   });
 
   const handleCalculate = () => {
-    // Mock calculation
-    const settlement = orderData.units * 90;
+    const settlement = orderData.units * (orderData.price || 0);
     setOrderData({ ...orderData, approxSettlementAmount: settlement });
     toast.success('Settlement amount calculated');
   };
@@ -127,9 +127,21 @@ export default function NewBuyOrderDialog({
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label>Price</Label>
+                <Label htmlFor="price">Price *</Label>
                 <div className="flex gap-2 items-center">
-                  <Input type="number" value={90} readOnly className="flex-1" />
+                  <Input 
+                    id="price"
+                    type="number" 
+                    step="0.01"
+                    value={orderData.price || ''} 
+                    onChange={(e) =>
+                      setOrderData({
+                        ...orderData,
+                        price: parseFloat(e.target.value) || 0,
+                      })
+                    }
+                    className="flex-1" 
+                  />
                   <span className="text-sm font-medium px-3 py-2 bg-muted rounded-md">
                     {orderData.currency}
                   </span>
