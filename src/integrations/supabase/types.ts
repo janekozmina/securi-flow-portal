@@ -14,6 +14,57 @@ export type Database = {
   }
   public: {
     Tables: {
+      accounts: {
+        Row: {
+          account_code: string
+          account_name: string
+          account_type: string
+          agent_code: string | null
+          agent_name: string | null
+          agent_type: string | null
+          closing_date: string | null
+          created_at: string
+          id: string
+          management_participant: string | null
+          owner_code: string
+          owner_name: string
+          registration_date: string | null
+          updated_at: string
+        }
+        Insert: {
+          account_code: string
+          account_name: string
+          account_type: string
+          agent_code?: string | null
+          agent_name?: string | null
+          agent_type?: string | null
+          closing_date?: string | null
+          created_at?: string
+          id?: string
+          management_participant?: string | null
+          owner_code: string
+          owner_name: string
+          registration_date?: string | null
+          updated_at?: string
+        }
+        Update: {
+          account_code?: string
+          account_name?: string
+          account_type?: string
+          agent_code?: string | null
+          agent_name?: string | null
+          agent_type?: string | null
+          closing_date?: string | null
+          created_at?: string
+          id?: string
+          management_participant?: string | null
+          owner_code?: string
+          owner_name?: string
+          registration_date?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
       auctions: {
         Row: {
           close_date: string
@@ -58,6 +109,48 @@ export type Database = {
           start_date?: string
           status?: string
           status_name?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      balances: {
+        Row: {
+          account_code: string
+          available_units: number
+          blocked_units: number
+          created_at: string
+          delivery_pending_units: number
+          id: string
+          instrument_code: string
+          pledged_units: number
+          restricted_units: number
+          total_units: number
+          updated_at: string
+        }
+        Insert: {
+          account_code: string
+          available_units?: number
+          blocked_units?: number
+          created_at?: string
+          delivery_pending_units?: number
+          id?: string
+          instrument_code: string
+          pledged_units?: number
+          restricted_units?: number
+          total_units?: number
+          updated_at?: string
+        }
+        Update: {
+          account_code?: string
+          available_units?: number
+          blocked_units?: number
+          created_at?: string
+          delivery_pending_units?: number
+          id?: string
+          instrument_code?: string
+          pledged_units?: number
+          restricted_units?: number
+          total_units?: number
           updated_at?: string
         }
         Relationships: []
@@ -202,6 +295,63 @@ export type Database = {
           id?: string
           phone?: string | null
           updated_at?: string | null
+        }
+        Relationships: []
+      }
+      securities: {
+        Row: {
+          created_at: string
+          currency: string
+          face_value: number | null
+          id: string
+          instrument_code: string
+          instrument_name: string
+          isin: string | null
+          issue_date: string | null
+          issuer: string | null
+          maturity_date: string | null
+          payment_frequency: string | null
+          rate: number | null
+          rate_type: string | null
+          term: string | null
+          type: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          currency?: string
+          face_value?: number | null
+          id?: string
+          instrument_code: string
+          instrument_name: string
+          isin?: string | null
+          issue_date?: string | null
+          issuer?: string | null
+          maturity_date?: string | null
+          payment_frequency?: string | null
+          rate?: number | null
+          rate_type?: string | null
+          term?: string | null
+          type: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          currency?: string
+          face_value?: number | null
+          id?: string
+          instrument_code?: string
+          instrument_name?: string
+          isin?: string | null
+          issue_date?: string | null
+          issuer?: string | null
+          maturity_date?: string | null
+          payment_frequency?: string | null
+          rate?: number | null
+          rate_type?: string | null
+          term?: string | null
+          type?: string
+          updated_at?: string
         }
         Relationships: []
       }
